@@ -3,6 +3,7 @@ import { Image } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createSharedElementStackNavigator } from 'react-navigation-shared-element';
 import { Provider } from 'react-redux';
 
 import Home from '~/pages/home';
@@ -10,6 +11,7 @@ import Payment from '~/pages/payment';
 import images from '~/assets';
 import stylesGlobal from '~/stylesGlobal/stylesGlobal.js';
 import ItemDetail from '~/components/ItemDetail';
+import ItemDetailModal from '~/components/ItemDetailModal';
 import store from '~/redux/store.js';
 import { QueryClient, QueryClientProvider, useQuery } from 'react-query';
 
@@ -17,8 +19,9 @@ const queryClient = new QueryClient();
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
+const StackShared = createSharedElementStackNavigator({});
 
-const TabHome = () => {
+const TabBar = () => {
    return (
       <Tab.Navigator
          screenOptions={({ route }) => ({
@@ -40,18 +43,41 @@ const TabHome = () => {
             tabBarInactiveTintColor: 'gray',
          })}
       >
-         <Tab.Screen name="Home" component={HomeTabScreen} />
+         <Tab.Screen name="Home" component={HomeScreen} />
          <Tab.Screen name="Payment" component={Payment} />
       </Tab.Navigator>
    );
 };
 
-const HomeTabScreen = () => {
+const HomeScreen = () => {
    return (
       <Stack.Navigator>
-         <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
+         <Stack.Screen name="ScreenHome" component={Home} options={{ headerShown: false }} />
       </Stack.Navigator>
    );
+};
+
+const optionsOfItemDetail = {
+   headerShown: false,
+   cardStyleInterpolator: ({ current: { progress } }) => {
+      return {
+         cardStyle: {
+            backgroundColor: 'tranpersrant',
+            opacity: progress,
+         },
+      };
+   },
+};
+const optionsOfItemDetailModal = {
+   headerShown: false,
+   cardStyleInterpolator: ({ current: { progress } }) => {
+      return {
+         cardStyle: {
+            // backgroundColor: 'tranpersrant',
+            opacity: progress,
+         },
+      };
+   },
 };
 
 const App = () => {
@@ -59,10 +85,26 @@ const App = () => {
       <Provider store={store}>
          <QueryClientProvider client={queryClient}>
             <NavigationContainer>
-               <Stack.Navigator>
-                  <Stack.Screen name="Home" component={TabHome} options={{ headerShown: false }} />
-                  <Stack.Screen name="ItemDetail" component={ItemDetail} options={{ headerShown: false }} />
-               </Stack.Navigator>
+               <StackShared.Navigator>
+                  <StackShared.Screen name="ScreenHome" component={TabBar} options={{ headerShown: false }} />
+                  <StackShared.Screen
+                     name="ItemDetail"
+                     component={ItemDetail}
+                     options={optionsOfItemDetail}
+                     sharedElements={(route) => {
+                        return [{ animation: 'fade', resize: 'none', id: `Item-Detail-${route.params.index}` }];
+                     }}
+                  />
+
+                  <StackShared.Screen
+                     name="ItemDetailModal"
+                     component={ItemDetailModal}
+                     options={optionsOfItemDetailModal}
+                     sharedElements={(route) => {
+                        return [{ animation: 'fade', id: `img-detail-${route.params.index}` }];
+                     }}
+                  />
+               </StackShared.Navigator>
             </NavigationContainer>
          </QueryClientProvider>
       </Provider>

@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { normalizeHeight, normalizeWidth } from '~/configs/normalize';
+import { normalizeWidth } from '~/configs/normalize';
 
 const styles = StyleSheet.create({
    wrapper: {
@@ -11,8 +11,8 @@ const styles = StyleSheet.create({
       alignItems: 'center',
    },
    square: {
-      width: 100,
-      height: 100,
+      width: normalizeWidth(100),
+      height: normalizeWidth(100),
       margin: 20,
    },
    text: {

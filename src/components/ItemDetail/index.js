@@ -1,8 +1,13 @@
-import { View, Button, Image, Text, TouchableOpacity, FlatList, ScrollView } from 'react-native';
+import { View, Image, Text, ScrollView } from 'react-native';
+import { useState, useRef } from 'react';
 import { useQuery } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
+import Animated, { useSharedValue, useAnimatedScrollHandler } from 'react-native-reanimated';
+import { SharedElement } from 'react-navigation-shared-element';
 
 import ButtonComponent from '~/components/ButtonComponent';
+import LoadingComponent from '~/components/popupComponent/LoadingComponent';
+import ErrorComponent from '~/components/popupComponent/ErrorComponent';
 import { updateAllArt } from '~/redux/AllArtSlice.js';
 
 import styles from './style.js';
@@ -11,8 +16,8 @@ import images from '~/assets';
 import ImgDetail from '~/components/ImgDetail';
 
 function ItemDetail({ route, navigation }) {
-   const selectedItem = route.params;
-
+   const selectedItem = route.params.data;
+   const indexShareElement = route.params.index;
    const dispatch = useDispatch();
 
    const dataAllArt = useSelector((state) => state.AllArt.data);
@@ -23,43 +28,27 @@ function ItemDetail({ route, navigation }) {
       error: errorAllArt,
    } = useQuery('allArt', services.getAllArt, {
       onSuccess: (res) => {
-         // console.log('res-allArt', res);
          dispatch(updateAllArt({ ...res }));
       },
       onError: (err) => {
-         // console.log('err-category', err);
+         console.log('err-category', err);
       },
    });
 
-   if (isErrorAllArt)
-      return (
-         <View>
-            <Text>Loading ......</Text>
-            <Text>Loading ......</Text>
-            <Text>Loading ......</Text>
-            <Text>Loading ......</Text>
-            <Text>Something wrong: {errorAllArt.message}</Text>
-         </View>
-      );
-   if (isLoadingAllArt)
-      return (
-         <View>
-            <Text>Loading ......</Text>
-         </View>
-      );
+   if (isErrorAllArt) return <ErrorComponent msg={errorAllArt.message} />;
+   if (isLoadingAllArt) return <LoadingComponent />;
 
-   const TopUI = ({ item }) => {
-      // console.log('item in TopIU', selectedItem);
+   const TopUI = ({ item, index }) => {
       return (
-         <>
+         <SharedElement key={`Item-Detail-${index}`} id={`Item-Detail-${index}`}>
             <View style={styles.banner}>
-               {item.artSource ? (
+               {item?.artSource ? (
                   <Image style={styles.banner.imgBackground} source={{ uri: item.artSource }}></Image>
                ) : (
                   <Image style={styles.banner.imgBackground} source={images.artDefault}></Image>
                )}
-               <View style={item.artistActive ? { backgroundColor: 'transparent' } : styles.banner.textNotion}>
-                  {item.artistActive ? null : <Text style={styles.banner.textNotion.text}>NEW ARTIST</Text>}
+               <View style={item?.artistActive ? { backgroundColor: 'transparent' } : styles.banner.textNotion}>
+                  {item?.artistActive ? null : <Text style={styles.banner.textNotion.text}>NEW ARTIST</Text>}
                </View>
             </View>
 
@@ -73,7 +62,7 @@ function ItemDetail({ route, navigation }) {
                <Text style={styles.boxInforArtist.textName}>{item.artistName}</Text>
                <Text style={styles.boxInforArtist.textDesc}>{item.description}</Text>
             </View>
-         </>
+         </SharedElement>
       );
    };
 
@@ -96,7 +85,17 @@ function ItemDetail({ route, navigation }) {
                <ButtonComponent style={styles.customUnlockButton} title="UNLOCK" />
             </View>
             <View style={styles.groupImg}>
-               {!!allArt && allArt.map((item, index) => <ImgDetail key={index} item={item} />)}
+               {!!allArt &&
+                  allArt.map((item, index) => (
+                     <SharedElement key={`img-detail-${index}`} id={`img-detail-${index}`}>
+                        <ImgDetail
+                           onPress={() => {
+                              navigation.navigate('ItemDetailModal', { data: item, index: index });
+                           }}
+                           item={item}
+                        />
+                     </SharedElement>
+                  ))}
                <ButtonComponent style={styles.addImg} onlyIcon source={images.icons.plusIcon} />
             </View>
          </>
@@ -104,11 +103,11 @@ function ItemDetail({ route, navigation }) {
    };
 
    return (
-      <ScrollView>
+      <ScrollView showsVerticalScrollIndicator={false}>
          <View style={styles.buttonBack}>
             <ButtonComponent onlyIcon source={images.icons.exitIcon} onPress={() => navigation.goBack()} />
          </View>
-         <TopUI item={selectedItem} />
+         <TopUI item={selectedItem} index={indexShareElement} />
          <ContentUI item={dataAllArt} />
       </ScrollView>
    );

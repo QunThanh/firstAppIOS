@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { Image, TouchableOpacity } from 'react-native';
 
 import images from '~/assets';
@@ -7,14 +8,15 @@ import styles from './styles.js';
 
 {
    unlock: true,
-   artSource: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTY4qTtwC9O8T4daOLnJTU1hyopFHMT72x-08vqq4CeAtueN1M8zVRirr36cdRu8ymExok&usqp=CAU',
+   artSource: 'https://encrypted-tbn0.gstatic.com/images',
 }
 */
 
-function ImgDetail({ item }) {
+function ImgDetail({ item, onPress }) {
    // console.log('itemIn ImgDetail', item);
+
    return (
-      <TouchableOpacity disabled={item.unlock} activeOpacity={0.5} style={styles.wrapper}>
+      <TouchableOpacity onPress={onPress} disabled={item.unlock} activeOpacity={0.5} style={styles.wrapper}>
          {item.unlock && <Image source={images.icons.lockIcon} style={styles.icon} />}
          <Image source={{ uri: item.artSource }} style={styles.img} />
       </TouchableOpacity>

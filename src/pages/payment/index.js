@@ -24,6 +24,7 @@ function Payment() {
    const [date, setDate] = useState('');
    const [code, setCode] = useState('');
    const [post, setPost] = useState(false);
+   const [reFetch, setReFetch] = useState(false);
    const [resPost, setResPost] = useState({ success: true, msg: 'SUCCESS' });
    const [visible, setVisible] = useState(false);
 
@@ -33,9 +34,11 @@ function Payment() {
       isLoading: isLoadingPayment,
       error: errorPayment,
    } = useQuery('payment', services.getAllPayment, {
+      enabled: reFetch,
       onSuccess: (res) => {
          console.log('payment', res);
          dispatch(updatePayment({ ...res }));
+         setReFetch(false);
       },
       onError: (err) => {
          console.log('err-payment', err);
@@ -66,6 +69,7 @@ function Payment() {
             setResPost(res);
             setPost(false);
             setVisible(true);
+            if (res.success) setReFetch(true);
          },
          onError: (err) => {
             console.log('err-postPayment', err);

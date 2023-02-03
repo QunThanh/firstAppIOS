@@ -1,9 +1,8 @@
-import { View, Text, SafeAreaView } from 'react-native';
+import { View, SafeAreaView } from 'react-native';
 import { useQuery } from 'react-query';
 import { useSelector, useDispatch } from 'react-redux';
 
 import styles from './styles.js';
-import images from '~/assets/index.js';
 
 //component
 import ArtItemComponent from '~/components/ArtItemComponent';

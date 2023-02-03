@@ -95,6 +95,35 @@ const styles = StyleSheet.create({
       width: normalizeWidth(150),
       height: normalizeWidth(300),
    },
+
+   // =====Model Pop-up======
+   backgroundModel: {
+      position: 'absolute',
+      width: '100%',
+      height: '100%',
+      top: 0,
+      left: 0,
+      flex: 1,
+      backgroundColor: 'transparent',
+      justifyContent: 'center',
+      alignItems: 'center',
+   },
+   contentModel: {
+      width: normalizeWidth(300),
+      height: normalizeWidth(500),
+      position: 'relative',
+      backgroundColor: 'blue',
+   },
+   imgPopUp: {
+      width: '100%',
+      height: '100%',
+   },
+   closeModel: {
+      position: 'absolute',
+      top: 10,
+      right: 10,
+   },
+   // =======================
 });
 
 export default styles;
