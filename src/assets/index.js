@@ -22,6 +22,7 @@ const images = {
       art5: require('./img/art5.webp'),
    },
    icons: {
+      tap: require('./img/tap.png'),
       banking: require('./img/cashless-payment.png'),
       paypal: require('./img/paypal.png'),
       wallet: require('./img/wallet.png'),

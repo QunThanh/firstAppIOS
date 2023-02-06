@@ -1,8 +1,17 @@
-import { View, Text, TextInput, Image } from 'react-native';
+import { View, Text, TextInput, Image, ScrollView, TouchableOpacity } from 'react-native';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useQuery } from 'react-query';
 import MaskInput, { Masks } from 'react-native-mask-input';
+import Animated, {
+   SlideInLeft,
+   useSharedValue,
+   useAnimatedStyle,
+   withRepeat,
+   Layout,
+   withTiming,
+   withSequence,
+} from 'react-native-reanimated';
 
 import styles from './styles';
 import images from '~/assets/index.js';
@@ -16,6 +25,7 @@ import services from '~/services/index.js';
 import { updatePayment } from '~/redux/PaymentSlice.js';
 
 function Payment() {
+   //redux
    const dispatch = useDispatch();
    const dataPayment = useSelector((state) => state.payment);
 
@@ -24,7 +34,7 @@ function Payment() {
    const [date, setDate] = useState('');
    const [code, setCode] = useState('');
    const [post, setPost] = useState(false);
-   const [reFetch, setReFetch] = useState(false);
+   const [reFetch, setReFetch] = useState(true);
    const [resPost, setResPost] = useState({ success: true, msg: 'SUCCESS' });
    const [visible, setVisible] = useState(false);
 
@@ -77,6 +87,37 @@ function Payment() {
       },
    );
 
+   // animation
+   const offsetRight = useSharedValue(0.3);
+   const offsetTop = useSharedValue(0);
+   const rotate = useSharedValue(0);
+
+   const animatedOffset = useAnimatedStyle(() => {
+      return {
+         right: offsetRight.value,
+         top: offsetTop.value,
+         transform: [
+            {
+               rotate: `${rotate.value}deg`,
+            },
+         ],
+      };
+   });
+   const handleOnPressTroll = () => {
+      rotate.value = withSequence(
+         withTiming(10, { duration: 100 }),
+         withRepeat(withTiming(-10, { duration: 100 }), 15, true),
+         withTiming(0, { duration: 100 }),
+      );
+      offsetTop.value = withTiming(Math.random() * 600, {
+         duration: 500,
+      });
+      offsetRight.value = withTiming(Math.random() * 350, {
+         duration: 600,
+      });
+   };
+
+   //check err, loading of fetch data
    if (isErrorPayment || isErrorPostPayment) {
       return (
          <>
@@ -103,11 +144,23 @@ function Payment() {
       if (!validateInput()) return;
       setPost(true);
    };
-
    const handleOnPressPopUp = () => {
       setVisible(false);
    };
 
+   const RenderListPaymentUI = (dataPayment = []) => {
+      //check type
+      console.log({ dataPayment });
+      if (dataPayment.type != '_payment') console.log(`data respond wrong type. current type: ${dataPayment.type} `);
+
+      return dataPayment.data.map((item, index) => (
+         <Animated.View key={index} layout={Layout.duration(8000)} entering={SlideInLeft.delay(index * 100)}>
+            <TouchableOpacity>
+               <ItemPaymentComponent item={item} key={index} index={index} />
+            </TouchableOpacity>
+         </Animated.View>
+      ));
+   };
    return (
       <View style={styles.wrapper}>
          <Text style={styles.header}>Payment Options</Text>
@@ -151,11 +204,18 @@ function Payment() {
             <Text style={styles.error}>{!resPost.success && `* ${resPost.msg}`}</Text>
 
             <Text style={styles.label}>More payment options</Text>
-            <ItemPaymentComponent items={dataPayment.data} />
+            <ScrollView style={{ flex: 1 }}>{RenderListPaymentUI(dataPayment.data)}</ScrollView>
          </View>
 
+         {/* Animation Troll Button */}
+         <Animated.View style={[styles.buttonTap, animatedOffset]}>
+            <ButtonComponent onlyIcon source={images.icons.tap} onPress={handleOnPressTroll} />
+         </Animated.View>
+
+         {/* Save Button */}
          <ButtonComponent style={styles.buttonSaveCard} title={'Save card'} onPress={handleOnPress} />
 
+         {/* Pop-Up */}
          <SuccessComponent visible={visible} success={resPost.success} msg={resPost.msg} onPress={handleOnPressPopUp} />
       </View>
    );

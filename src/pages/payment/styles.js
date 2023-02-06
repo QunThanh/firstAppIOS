@@ -64,8 +64,21 @@ const styles = StyleSheet.create({
       backgroundColor: 'white',
       borderRadius: 999,
       shadowColor: 'black',
-      shadowRadius: 5,
-      shadowOpacity: 0.5,
+      shadowRadius: 15,
+      shadowOpacity: 0.3,
+   },
+
+   // buttonTroll
+   buttonTap: {
+      marginTop: 50,
+      marginBottom: 50,
+      position: 'absolute',
+      right: 100,
+      top: 100,
+      borderRadius: 999,
+      shadowColor: 'black',
+      shadowRadius: 15,
+      shadowOpacity: 0.3,
    },
 });
 

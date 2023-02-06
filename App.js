@@ -14,6 +14,7 @@ import ItemDetail from '~/components/ItemDetail';
 import ItemDetailModal from '~/components/ItemDetailModal';
 import store from '~/redux/store.js';
 import { QueryClient, QueryClientProvider, useQuery } from 'react-query';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 const queryClient = new QueryClient();
 
@@ -82,32 +83,34 @@ const optionsOfItemDetailModal = {
 
 const App = () => {
    return (
-      <Provider store={store}>
-         <QueryClientProvider client={queryClient}>
-            <NavigationContainer>
-               <StackShared.Navigator>
-                  <StackShared.Screen name="ScreenHome" component={TabBar} options={{ headerShown: false }} />
-                  <StackShared.Screen
-                     name="ItemDetail"
-                     component={ItemDetail}
-                     options={optionsOfItemDetail}
-                     sharedElements={(route) => {
-                        return [{ animation: 'fade', resize: 'none', id: `Item-Detail-${route.params.index}` }];
-                     }}
-                  />
+      <GestureHandlerRootView style={{ flex: 1 }}>
+         <Provider store={store}>
+            <QueryClientProvider client={queryClient}>
+               <NavigationContainer>
+                  <StackShared.Navigator>
+                     <StackShared.Screen name="ScreenHome" component={TabBar} options={{ headerShown: false }} />
+                     <StackShared.Screen
+                        name="ItemDetail"
+                        component={ItemDetail}
+                        options={optionsOfItemDetail}
+                        sharedElements={(route) => {
+                           return [{ animation: 'fade', resize: 'none', id: `Item-Detail-${route.params.index}` }];
+                        }}
+                     />
 
-                  <StackShared.Screen
-                     name="ItemDetailModal"
-                     component={ItemDetailModal}
-                     options={optionsOfItemDetailModal}
-                     sharedElements={(route) => {
-                        return [{ animation: 'fade', id: `img-detail-${route.params.index}` }];
-                     }}
-                  />
-               </StackShared.Navigator>
-            </NavigationContainer>
-         </QueryClientProvider>
-      </Provider>
+                     <StackShared.Screen
+                        name="ItemDetailModal"
+                        component={ItemDetailModal}
+                        options={optionsOfItemDetailModal}
+                        sharedElements={(route) => {
+                           return [{ animation: 'fade', id: `img-detail-${route.params.index}` }];
+                        }}
+                     />
+                  </StackShared.Navigator>
+               </NavigationContainer>
+            </QueryClientProvider>
+         </Provider>
+      </GestureHandlerRootView>
    );
 };
 
