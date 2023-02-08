@@ -1,8 +1,6 @@
 import { View, Image, Text, ScrollView } from 'react-native';
-import { useState, useRef } from 'react';
 import { useQuery } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
-import Animated, { useSharedValue, useAnimatedScrollHandler } from 'react-native-reanimated';
 import { SharedElement } from 'react-navigation-shared-element';
 
 import ButtonComponent from '~/components/ButtonComponent';
