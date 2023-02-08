@@ -4,6 +4,7 @@ import { normalizeWidth, normalizeHeight } from '~/configs/normalize.js';
 
 const styles = StyleSheet.create({
    wrapper: {
+      position: 'relative',
       width: normalizeWidth(150),
       height: normalizeWidth(300),
       marginTop: 10,

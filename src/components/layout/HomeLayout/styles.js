@@ -7,6 +7,8 @@ const styles = StyleSheet.create({
    },
    content: {
       flex: 1,
+   },
+   artItemComponent: {
       flexDirection: 'column',
       justifyContent: 'space-between',
       alignItems: 'center',

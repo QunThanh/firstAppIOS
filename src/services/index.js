@@ -1,6 +1,7 @@
 import getCategory from './categorySevice';
 import getItemHome from './itemHomeService';
 import getAllArt from './allArtService';
+import getMyArts from './myArtsService';
 import { postPayment, getAllPayment } from './allPaymentService';
 
 export const baseURL = 'http://192.168.1.156:1880';
@@ -10,6 +11,7 @@ const services = {
    getItemHome: () => getItemHome(baseURL),
    getAllArt: () => getAllArt(baseURL),
    getAllPayment: () => getAllPayment(baseURL),
+   getMyArts: () => getMyArts(baseURL),
    postPayment: (data) => postPayment(baseURL, data),
 };
 

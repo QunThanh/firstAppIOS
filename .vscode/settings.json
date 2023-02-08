@@ -1,3 +1,7 @@
 {
-   "cSpell.words": ["tranperrant", "tranpersrant"]
+   "cSpell.words": [
+      "tranperrant",
+      "tranpersrant"
+   ],
+   "java.compile.nullAnalysis.mode": "automatic"
 }

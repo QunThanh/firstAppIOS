@@ -1,9 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Text, FlatList, TouchableOpacity, View } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+
+import { updateIndexCategory } from '~/redux/IndexCategorySlice.js';
 
 import styles from './styles.js';
 
 function Category({ fullData = {} }) {
+   const dispatch = useDispatch();
+
    const dataCategory = fullData.data;
 
    //check type
@@ -12,8 +17,9 @@ function Category({ fullData = {} }) {
    //Hook
    const [nameCategory, setNameCategory] = useState('Artist Books');
 
-   const handlePress = (item) => {
+   const handlePress = (item, index) => {
       setNameCategory(item.nameCategory);
+      dispatch(updateIndexCategory(index));
    };
 
    const Item = ({ item, index, onPress, backgroundColor = 'white', textColor = 'black' }) => (
@@ -25,7 +31,7 @@ function Category({ fullData = {} }) {
    );
 
    const renderItem = ({ item, index }) => {
-      return <Item item={item} index={index} onPress={() => handlePress(item)} />;
+      return <Item item={item} index={index} onPress={() => handlePress(item, index)} />;
    };
 
    return (

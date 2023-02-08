@@ -1,11 +1,9 @@
-import { useRef } from 'react';
 import { Image, TouchableOpacity } from 'react-native';
 
 import images from '~/assets';
 import styles from './styles.js';
 
 /* API send 
-
 {
    unlock: true,
    artSource: 'https://encrypted-tbn0.gstatic.com/images',

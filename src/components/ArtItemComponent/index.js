@@ -1,13 +1,6 @@
 import { View, Text, FlatList, Image, TouchableOpacity } from 'react-native';
 import { SharedElement } from 'react-navigation-shared-element';
-import { TapGestureHandler } from 'react-native-gesture-handler';
-import Animated, {
-   useAnimatedGestureHandler,
-   useAnimatedStyle,
-   useSharedValue,
-   withSpring,
-   withTiming,
-} from 'react-native-reanimated';
+import Animated, { SlideInLeft, useSharedValue } from 'react-native-reanimated';
 
 import styles from './styles.js';
 import images from '~/assets/index.js';
@@ -16,12 +9,6 @@ function ArtItemComponent({ data, navigation, style }) {
    //check type
    if (data.type != '_artist') return console.log(`data wrong type. type is ${data.type}`);
    const pressed = useSharedValue(false);
-   const animationMove = useAnimatedStyle(() => {
-      return {
-         backgroundColor: withSpring(pressed.value ? 'gold' : 'white'),
-         transform: [{ scale: withSpring(pressed.value ? 1.1 : 1) }],
-      };
-   });
 
    const dataItem = data.data;
 
@@ -29,30 +16,12 @@ function ArtItemComponent({ data, navigation, style }) {
       return navigation.navigate('ItemDetail', { data: item, index: index });
    };
 
-   const handelItemMoved = useAnimatedGestureHandler({
-      onStart: (event, ctx) => {
-         pressed.value = true;
-         console.log('Start');
-         console.log({ event, ctx });
-      },
-
-      onActive: (event, ctx) => {
-         console.log({ event, ctx });
-         console.log('Active');
-      },
-
-      onEnd: (event, ctx) => {
-         pressed.value = false;
-         console.log('End');
-      },
-   });
-
    function renderUI({ item, index }) {
       return (
          <SharedElement key={`Item-Detail-${index}`} id={`Item-Detail-${index}`}>
-            <TouchableOpacity onPress={() => handlePressShowDetail(item, index)}>
-               <TapGestureHandler id={`Item-Detail-${index}`} onGestureEvent={handelItemMoved}>
-                  <Animated.View style={[styles.boxItem, animationMove]}>
+            <Animated.View entering={SlideInLeft.delay(index * 100)}>
+               <TouchableOpacity onPress={() => handlePressShowDetail(item, index)}>
+                  <Animated.View style={[styles.boxItem]}>
                      <View style={styles.boxItem.boxArt}>
                         {item.artSource ? (
                            <Image style={styles.boxArt.imgArt} source={{ uri: item.artSource }} />
@@ -75,8 +44,8 @@ function ArtItemComponent({ data, navigation, style }) {
                         <Text style={styles.boxContent.textDesc}>{item.description}</Text>
                      </View>
                   </Animated.View>
-               </TapGestureHandler>
-            </TouchableOpacity>
+               </TouchableOpacity>
+            </Animated.View>
          </SharedElement>
       );
    }
