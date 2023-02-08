@@ -1,6 +1,5 @@
 import { StyleSheet } from 'react-native';
 
-import stylesGlobal from '~/stylesGlobal/stylesGlobal.js';
 import { normalizeWidth } from '~/configs/normalize.js';
 
 const styles = StyleSheet.create({
@@ -8,10 +7,11 @@ const styles = StyleSheet.create({
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
+      paddingTop: 50,
    },
    contentModel: {
       width: normalizeWidth(350),
-      height: normalizeWidth(700),
+      height: normalizeWidth(650),
       position: 'relative',
    },
    imgPopUp: {

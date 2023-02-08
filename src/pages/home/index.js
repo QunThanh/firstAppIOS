@@ -1,7 +1,7 @@
 import HomeLayout from '~/components/layout/HomeLayout';
 
-function Home({ navigation }) {
-   return <HomeLayout navigation={navigation} />;
+function Home({ componentId }) {
+   return <HomeLayout componentId={componentId} />;
 }
 
 export default Home;

@@ -18,9 +18,8 @@ import services from '~/services';
 //redux
 import { updateCategory } from '~/redux/CategorySlice.js';
 import { updateItemInHome } from '~/redux/ItemInHomeSlide.js';
-import { useState } from 'react';
 
-function HomeLayout({ navigation }) {
+function HomeLayout({ navigation, componentId }) {
    const dispatch = useDispatch();
    const dataCategory = useSelector((state) => state.category);
    const dataItemInHome = useSelector((state) => state.itemInHome);
@@ -58,9 +57,12 @@ function HomeLayout({ navigation }) {
 
    if (isLoadingCategory || isLoadingItemInHome) return <LoadingComponent />;
 
+   // handle press index category
    const renderContent = () => {
       if (selectCategory == 0)
-         return <ArtItemComponent style={styles.artItemComponent} navigation={navigation} data={dataItemInHome.data} />;
+         return (
+            <ArtItemComponent style={styles.artItemComponent} componentId={componentId} data={dataItemInHome.data} />
+         );
       if (selectCategory == 1) return <CollectionsComponent />;
       else
          return (

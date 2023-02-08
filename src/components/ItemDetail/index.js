@@ -12,10 +12,11 @@ import styles from './style.js';
 import services from '~/services/index.js';
 import images from '~/assets';
 import ImgDetail from '~/components/ImgDetail';
+import { Navigation } from 'react-native-navigation';
 
-function ItemDetail({ route, navigation }) {
-   const selectedItem = route.params.data;
-   const indexShareElement = route.params.index;
+function ItemDetail({ data, index, componentId }) {
+   const selectedItem = data;
+   const indexShareElement = index;
    const dispatch = useDispatch();
 
    const dataAllArt = useSelector((state) => state.AllArt.data);
@@ -23,9 +24,11 @@ function ItemDetail({ route, navigation }) {
    const {
       isError: isErrorAllArt,
       isLoading: isLoadingAllArt,
+      isSuccess: isSuccessAllArt,
       error: errorAllArt,
    } = useQuery('allArt', services.getAllArt, {
       onSuccess: (res) => {
+         console.log({ res });
          dispatch(updateAllArt({ ...res }));
       },
       onError: (err) => {
@@ -36,9 +39,9 @@ function ItemDetail({ route, navigation }) {
    if (isErrorAllArt) return <ErrorComponent msg={errorAllArt.message} />;
    if (isLoadingAllArt) return <LoadingComponent />;
 
-   const TopUI = ({ item, index }) => {
+   const TopUI = ({ item }) => {
       return (
-         <SharedElement key={`Item-Detail-${index}`} id={`Item-Detail-${index}`}>
+         <View nativeID="img-item-detail-to">
             <View style={styles.banner}>
                {item?.artSource ? (
                   <Image style={styles.banner.imgBackground} source={{ uri: item.artSource }}></Image>
@@ -51,20 +54,20 @@ function ItemDetail({ route, navigation }) {
             </View>
 
             <View style={styles.boxInforArtist}>
-               {item.artistAvatar ? (
-                  <Image style={styles.boxInforArtist.imgAvatar} source={{ uri: item.artistAvatar }}></Image>
+               {item?.artistAvatar ? (
+                  <Image style={styles.boxInforArtist.imgAvatar} source={{ uri: item?.artistAvatar }}></Image>
                ) : (
                   <Image style={styles.boxInforArtist.imgAvatar} source={images.avatarDefault}></Image>
                )}
 
-               <Text style={styles.boxInforArtist.textName}>{item.artistName}</Text>
-               <Text style={styles.boxInforArtist.textDesc}>{item.description}</Text>
+               <Text style={styles.boxInforArtist.textName}>{item?.artistName}</Text>
+               <Text style={styles.boxInforArtist.textDesc}>{item?.description}</Text>
             </View>
-         </SharedElement>
+         </View>
       );
    };
 
-   const ContentUI = ({ item }) => {
+   const ContentUI = ({ item, componentId }) => {
       // need call API in there
       // check type
       const allArt = item.data;
@@ -87,8 +90,43 @@ function ItemDetail({ route, navigation }) {
                   allArt.map((item, index) => (
                      <SharedElement key={`img-detail-${index}`} id={`img-detail-${index}`}>
                         <ImgDetail
+                           nativeID={`img-${index}-from`}
                            onPress={() => {
-                              navigation.navigate('ItemDetailModal', { data: item, index: index });
+                              Navigation.push(componentId, {
+                                 component: {
+                                    id: 'SCREEN_IMG_DETAIL',
+                                    name: 'ItemDetailModal',
+                                    passProps: {
+                                       data: item,
+                                       index: index,
+                                       componentId,
+                                    },
+                                    options: {
+                                       animations: {
+                                          push: {
+                                             sharedElementTransitions: [
+                                                {
+                                                   fromId: `img-${index}-from`,
+                                                   toId: `img-modal-to`,
+                                                   interpolation: { type: 'spring' },
+                                                   duration: 250,
+                                                },
+                                             ],
+                                          },
+                                          pop: {
+                                             sharedElementTransitions: [
+                                                {
+                                                   toId: `img-${index}-from`,
+                                                   fromId: `img-modal-to`,
+                                                   interpolation: { type: 'linear' },
+                                                   duration: 250,
+                                                },
+                                             ],
+                                          },
+                                       },
+                                    },
+                                 },
+                              });
                            }}
                            item={item}
                         />
@@ -101,12 +139,12 @@ function ItemDetail({ route, navigation }) {
    };
 
    return (
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView contentInsetAdjustmentBehavior="never" showsVerticalScrollIndicator={false}>
          <View style={styles.buttonBack}>
-            <ButtonComponent onlyIcon source={images.icons.exitIcon} onPress={() => navigation.goBack()} />
+            <ButtonComponent onlyIcon source={images.icons.exitIcon} onPress={() => Navigation.popTo('HOME_SCREEN')} />
          </View>
          <TopUI item={selectedItem} index={indexShareElement} />
-         <ContentUI item={dataAllArt} />
+         {isSuccessAllArt && !isLoadingAllArt && <ContentUI item={dataAllArt} componentId={componentId} />}
       </ScrollView>
    );
 }

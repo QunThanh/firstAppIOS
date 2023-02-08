@@ -1,10 +1,13 @@
 import { Navigation } from 'react-native-navigation';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { Provider } from 'react-redux';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import store from '~/redux/store.js';
 
 import Home from '~/pages/home';
 import Payment from '~/pages/payment';
+import ItemDetail from '~/components/ItemDetail';
+import ItemDetailModal from '~/components/ItemDetailModal';
 import images from '~/assets';
 
 const queryClient = new QueryClient();
@@ -14,11 +17,13 @@ function registerComponent(stringId, Component) {
       stringId,
       () => (props) => {
          return (
-            <Provider store={store}>
-               <QueryClientProvider client={queryClient}>
-                  <Component {...props} />
-               </QueryClientProvider>
-            </Provider>
+            <SafeAreaProvider>
+               <Provider store={store}>
+                  <QueryClientProvider client={queryClient}>
+                     <Component {...props} />
+                  </QueryClientProvider>
+               </Provider>
+            </SafeAreaProvider>
          );
       },
       () => Component,
@@ -27,6 +32,8 @@ function registerComponent(stringId, Component) {
 
 registerComponent('HomePage', Home);
 registerComponent('PaymentPage', Payment);
+registerComponent('ItemDetail', ItemDetail);
+registerComponent('ItemDetailModal', ItemDetailModal);
 
 Navigation.events().registerAppLaunchedListener(async () => {
    Navigation.setRoot({

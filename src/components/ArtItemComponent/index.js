@@ -4,21 +4,61 @@ import Animated, { SlideInLeft, useSharedValue } from 'react-native-reanimated';
 
 import styles from './styles.js';
 import images from '~/assets/index.js';
+import { Navigation } from 'react-native-navigation';
 
-function ArtItemComponent({ data, navigation, style }) {
+function ArtItemComponent({ data, componentId, style }) {
+   console.log({ componentId });
    //check type
    if (data.type != '_artist') return console.log(`data wrong type. type is ${data.type}`);
    const pressed = useSharedValue(false);
 
    const dataItem = data.data;
-
+   // { data: item, index: index }
    const handlePressShowDetail = (item, index) => {
-      return navigation.navigate('ItemDetail', { data: item, index: index });
+      return Navigation.push(componentId, {
+         component: {
+            id: 'SCREEN_ITEM_DETAIL',
+            name: 'ItemDetail',
+            passProps: {
+               data: item,
+               index: index,
+               componentId,
+            },
+            options: {
+               topBar: {
+                  visible: false,
+               },
+
+               animations: {
+                  push: {
+                     sharedElementTransitions: [
+                        {
+                           fromId: `img-art-item-${index}-from`,
+                           toId: `img-item-detail-to`,
+                           interpolation: { type: 'linear' },
+                           duration: 500,
+                        },
+                     ],
+                  },
+                  pop: {
+                     sharedElementTransitions: [
+                        {
+                           fromId: `img-item-detail-to`,
+                           toId: `img-art-item-${index}-from`,
+                           interpolation: { type: 'linear' },
+                           duration: 200,
+                        },
+                     ],
+                  },
+               },
+            },
+         },
+      });
    };
 
    function renderUI({ item, index }) {
       return (
-         <SharedElement key={`Item-Detail-${index}`} id={`Item-Detail-${index}`}>
+         <View nativeID={`img-art-item-${index}-from`}>
             <Animated.View entering={SlideInLeft.delay(index * 100)}>
                <TouchableOpacity onPress={() => handlePressShowDetail(item, index)}>
                   <Animated.View style={[styles.boxItem]}>
@@ -46,7 +86,7 @@ function ArtItemComponent({ data, navigation, style }) {
                   </Animated.View>
                </TouchableOpacity>
             </Animated.View>
-         </SharedElement>
+         </View>
       );
    }
 
