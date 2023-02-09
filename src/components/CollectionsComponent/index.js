@@ -1,4 +1,3 @@
-import { ScrollView, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import { useDispatch, useSelector } from 'react-redux';
 import { useQuery } from 'react-query';
@@ -12,6 +11,14 @@ import ImgDetail from '~/components/ImgDetail';
 import styles from './styles.js';
 import services from '~/services';
 import Animated, { SlideInRight } from 'react-native-reanimated';
+
+const RenderUI = ({ item, index }) => {
+   return (
+      <Animated.View entering={SlideInRight.delay(index * 100)}>
+         <ImgDetail item={item} />
+      </Animated.View>
+   );
+};
 
 function CollectionsComponent({ style }) {
    const dispatch = useDispatch();
@@ -28,18 +35,12 @@ function CollectionsComponent({ style }) {
    if (dataMyArts.type != 'my_arts') return console.log(`response wrong type. Current type: ${dataMyArts.type}`);
 
    const dataRender = dataMyArts.data;
-   const renderUI = ({ item, index }) => {
-      return (
-         <Animated.View entering={SlideInRight.delay(index * 100)}>
-            <ImgDetail item={item} />
-         </Animated.View>
-      );
-   };
+
    return (
       <FlatList
          showsVerticalScrollIndicator={false}
          data={dataRender}
-         renderItem={renderUI}
+         renderItem={RenderUI}
          numColumns={2}
          columnWrapperStyle={{
             justifyContent: 'space-around',
