@@ -36,6 +36,7 @@ const images = {
       homeIconUnActive: require('./img/icon_home_white.png'),
       cardIconActive: require('./img/icon_card_black.png'),
       cardIconUnActive: require('./img/icon_card_white.png'),
+      delete: require('./img/trash.png'),
    },
 };
 

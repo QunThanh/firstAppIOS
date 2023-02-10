@@ -1,4 +1,4 @@
-import { View, Text, TextInput, Image, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, Image, ScrollView, TouchableOpacity, SliderComponent } from 'react-native';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useQuery } from 'react-query';
@@ -11,6 +11,8 @@ import Animated, {
    Layout,
    withTiming,
    withSequence,
+   useAnimatedGestureHandler,
+   withSpring,
 } from 'react-native-reanimated';
 
 import styles from './styles';
@@ -23,6 +25,7 @@ import LoadingComponent from '~/components/popupComponent/LoadingComponent';
 import ErrorComponent from '~/components/popupComponent/ErrorComponent';
 import services from '~/services/index.js';
 import { updatePayment } from '~/redux/PaymentSlice.js';
+import { PanGestureHandler } from 'react-native-gesture-handler';
 
 function Payment() {
    //redux
@@ -37,6 +40,7 @@ function Payment() {
    const [reFetch, setReFetch] = useState(true);
    const [resPost, setResPost] = useState({ success: true, msg: 'SUCCESS' });
    const [visible, setVisible] = useState(false);
+   const [inputError, setInputError] = useState('');
 
    //query payment
    const {
@@ -88,34 +92,53 @@ function Payment() {
    );
 
    // animation
-   const offsetRight = useSharedValue(0.3);
+   const offsetRight = useSharedValue(0.5);
    const offsetTop = useSharedValue(0);
    const rotate = useSharedValue(0);
+   const moving = useSharedValue(false);
+   const xPosition = useSharedValue(0);
+   const yPosition = useSharedValue(0);
 
    const animatedOffset = useAnimatedStyle(() => {
       return {
+         backgroundColor: moving.value ? 'gold' : 'white',
          right: offsetRight.value,
          top: offsetTop.value,
          transform: [
-            {
-               rotate: `${rotate.value}deg`,
-            },
+            { rotate: moving.value ? '0deg' : `${rotate.value}deg` },
+            { translateX: xPosition.value },
+            { translateY: yPosition.value },
          ],
       };
    });
-   const handleOnPressTroll = () => {
-      rotate.value = withSequence(
-         withTiming(10, { duration: 100 }),
-         withRepeat(withTiming(-10, { duration: 100 }), 15, true),
-         withTiming(0, { duration: 100 }),
-      );
-      offsetTop.value = withTiming(Math.random() * 600, {
-         duration: 500,
-      });
-      offsetRight.value = withTiming(Math.random() * 350, {
-         duration: 600,
-      });
-   };
+
+   const handleMoveButton = useAnimatedGestureHandler({
+      onStart: (event, context) => {
+         moving.value = true;
+      },
+
+      onActive: (event, context) => {
+         xPosition.value = 0.5 + event.translationX;
+         yPosition.value = 0 + event.translationY;
+      },
+
+      onEnd: (event, context) => {
+         moving.value = false;
+         xPosition.value = withTiming(0, { duration: 500 });
+         yPosition.value = withTiming(0, { duration: 500 });
+         rotate.value = withSequence(
+            withTiming(10, { duration: 100 }),
+            withRepeat(withTiming(-10, { duration: 100 }), 15, true),
+            withTiming(0, { duration: 100 }),
+         );
+         offsetTop.value = withTiming(Math.random() * 600, {
+            duration: 500,
+         });
+         offsetRight.value = withTiming(Math.random() * 350, {
+            duration: 600,
+         });
+      },
+   });
 
    //check err, loading of fetch data
    if (isErrorPayment || isErrorPostPayment) {
@@ -130,11 +153,11 @@ function Payment() {
 
    const validateInput = () => {
       if (numCredit.length < 16 + 3) {
-         console.log('length of numCredit < 16');
+         setInputError('length of numCredit < 16');
          return false;
       }
       if (code.length < 3) {
-         console.log('length of code < 3');
+         setInputError('length of code < 3');
          return false;
       }
       return true;
@@ -148,6 +171,46 @@ function Payment() {
       setVisible(false);
    };
 
+   const RenderInputCard = () => {
+      return (
+         <View style={styles.wrapperCredit}>
+            <Image style={styles.icon} source={images.icons.creditCard} />
+
+            <View>
+               <MaskInput
+                  autoFocus={true}
+                  style={[styles.numCredit, styles.styleText]}
+                  value={numCredit}
+                  keyboardType="numeric"
+                  placeholder="Card number"
+                  onChangeText={setNumCredit}
+                  mask={Masks.CREDIT_CARD}
+               />
+
+               <View style={styles.creditExtent}>
+                  <MaskInput
+                     style={[styles.flex, styles.styleText]}
+                     value={date}
+                     keyboardType="numeric"
+                     maxLength={5}
+                     onChangeText={setDate}
+                     placeholder="MM/YY"
+                     mask={Masks.DATE_MMDDYYYY}
+                  />
+                  <TextInput
+                     style={[styles.flex, styles.styleText]}
+                     onChangeText={setCode}
+                     maxLength={3}
+                     value={code}
+                     placeholder="Security code"
+                     keyboardType="numeric"
+                  />
+               </View>
+            </View>
+         </View>
+      );
+   };
+
    const RenderListPaymentUI = (dataPayment = []) => {
       //check type
       console.log({ dataPayment });
@@ -155,9 +218,7 @@ function Payment() {
 
       return dataPayment.data.map((item, index) => (
          <Animated.View key={index} layout={Layout.duration(8000)} entering={SlideInLeft.delay(index * 100)}>
-            <TouchableOpacity>
-               <ItemPaymentComponent item={item} key={index} index={index} />
-            </TouchableOpacity>
+            <ItemPaymentComponent item={item} key={index} index={index} />
          </Animated.View>
       ));
    };
@@ -166,51 +227,20 @@ function Payment() {
          <Text style={styles.header}>Payment Options</Text>
          <View style={styles.content}>
             <Text style={styles.label}>Credit/debit card</Text>
-            <View style={styles.wrapperCredit}>
-               <Image style={styles.icon} source={images.icons.creditCard} />
-
-               <View>
-                  <MaskInput
-                     autoFocus={true}
-                     style={[styles.numCredit, styles.styleText]}
-                     value={numCredit}
-                     keyboardType="numeric"
-                     placeholder="Card number"
-                     onChangeText={setNumCredit}
-                     mask={Masks.CREDIT_CARD}
-                  />
-
-                  <View style={styles.creditExtent}>
-                     <MaskInput
-                        style={[styles.flex, styles.styleText]}
-                        value={date}
-                        keyboardType="numeric"
-                        maxLength={5}
-                        onChangeText={setDate}
-                        placeholder="MM/YY"
-                        mask={Masks.DATE_MMDDYYYY}
-                     />
-                     <TextInput
-                        style={[styles.flex, styles.styleText]}
-                        onChangeText={setCode}
-                        maxLength={3}
-                        value={code}
-                        placeholder="Security code"
-                        keyboardType="numeric"
-                     />
-                  </View>
-               </View>
-            </View>
-            <Text style={styles.error}>{!resPost.success && `* ${resPost.msg}`}</Text>
+            {RenderInputCard()}
+            {!resPost.success && <Text style={styles.error}>{`* ${resPost.msg}`}</Text>}
+            {validateInput && <Text style={styles.error}>{`* ${inputError}`}</Text>}
 
             <Text style={styles.label}>More payment options</Text>
-            <ScrollView style={{ flex: 1 }}>{RenderListPaymentUI(dataPayment.data)}</ScrollView>
+            <ScrollView>{RenderListPaymentUI(dataPayment.data)}</ScrollView>
          </View>
 
          {/* Animation Troll Button */}
-         <Animated.View style={[styles.buttonTap, animatedOffset]}>
-            <ButtonComponent onlyIcon source={images.icons.tap} onPress={handleOnPressTroll} />
-         </Animated.View>
+         <PanGestureHandler onGestureEvent={handleMoveButton}>
+            <Animated.View style={[styles.buttonTap, animatedOffset]}>
+               <ButtonComponent onlyIcon source={images.icons.tap} />
+            </Animated.View>
+         </PanGestureHandler>
 
          {/* Save Button */}
          <ButtonComponent style={styles.buttonSaveCard} title={'Save card'} onPress={handleOnPress} />
