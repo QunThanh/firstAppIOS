@@ -4,17 +4,24 @@ import stylesGlobal from '~/stylesGlobal/stylesGlobal.js';
 const styles = StyleSheet.create({
    wrapper: {
       position: 'relative',
-      flexDirection: 'row',
+      flexDirection: 'column',
+      justifyContent: 'space-between',
       margin: 5,
-      alignItems: 'center',
-      backgroundColor: 'yellow',
+      padding: 5,
+      borderRadius: 10,
+      backgroundColor: '#eee',
    },
+   wrapperHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+   },
+
    icon: {
       width: 40,
       height: 40,
       margin: 5,
    },
-   wrapperInfor: {
+   wrapperTextHeader: {
       marginLeft: 5,
       nameCard: { fontWeight: '700' },
       numCard: { fontWeight: '500', color: stylesGlobal.color.backgroundBlurGrey },
@@ -24,6 +31,12 @@ const styles = StyleSheet.create({
       right: 5,
       width: 30,
       height: 30,
+   },
+
+   wrapperTextDetail: {
+      flexDirection: 'column',
+      padding: 5,
+      paddingLeft: 57,
    },
 });
 

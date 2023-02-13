@@ -217,7 +217,7 @@ function Payment() {
       if (dataPayment.type != '_payment') console.log(`data respond wrong type. current type: ${dataPayment.type} `);
 
       return dataPayment.data.map((item, index) => (
-         <Animated.View key={index} layout={Layout.duration(8000)} entering={SlideInLeft.delay(index * 100)}>
+         <Animated.View key={index} entering={SlideInLeft.delay(index * 100)}>
             <ItemPaymentComponent item={item} key={index} index={index} />
          </Animated.View>
       ));
