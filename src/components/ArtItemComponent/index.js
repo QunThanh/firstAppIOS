@@ -26,7 +26,6 @@ function ArtItemComponent({ data, componentId, style }) {
                topBar: {
                   visible: false,
                },
-
                animations: {
                   push: {
                      sharedElementTransitions: [

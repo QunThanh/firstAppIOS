@@ -5,6 +5,7 @@ import { useSelector, useDispatch, connect } from 'react-redux';
 
 //component
 import Category from '~/components/layout/Category';
+import AllArtZustand from 'components/AllArtZustand'
 import ArtItemComponent from '~/components/ArtItemComponent';
 import CollectionsComponent from '~/components/CollectionsComponent';
 import LoadingComponent from '~/components/popupComponent/LoadingComponent';
@@ -64,13 +65,15 @@ function HomeLayout({ navigation, componentId }) {
             <ArtItemComponent style={styles.artItemComponent} componentId={componentId} data={dataItemInHome.data} />
          );
       if (selectCategory == 1) return <CollectionsComponent />;
-      else
+      
+      if (selectCategory == 2)
          return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                <ProgressBarLoadingComponent />
                <LoadingComponent />
             </View>
          );
+      else return <AllArtZustand />
    };
 
    return (

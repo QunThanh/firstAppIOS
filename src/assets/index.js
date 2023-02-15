@@ -23,6 +23,9 @@ const images = {
    },
    icons: {
       tap: require('./img/tap.png'),
+      login: require('./img/login.png'),
+      loginText: require('./img/loginText.png'),
+      loginError: require('./img/loginError.png'),
       banking: require('./img/cashless-payment.png'),
       paypal: require('./img/paypal.png'),
       wallet: require('./img/wallet.png'),
