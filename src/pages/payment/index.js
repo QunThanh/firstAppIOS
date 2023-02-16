@@ -1,23 +1,23 @@
-import { View, Text, TextInput, Image, ScrollView, TouchableOpacity, SliderComponent } from 'react-native';
+import { View, Text, TextInput, Image, ScrollView } from 'react-native';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useQuery } from 'react-query';
 import MaskInput, { Masks } from 'react-native-mask-input';
+import { PanGestureHandler } from 'react-native-gesture-handler';
 import Animated, {
    SlideInLeft,
    useSharedValue,
    useAnimatedStyle,
    withRepeat,
-   Layout,
    withTiming,
    withSequence,
    useAnimatedGestureHandler,
-   withSpring,
 } from 'react-native-reanimated';
 
 import styles from './styles';
 import images from '~/assets/index.js';
 
+import StackAnimated from '~/components/animation/StackAnimated'
 import ItemPaymentComponent from '~/components/ItemPaymentComponent';
 import ButtonComponent from '~/components/ButtonComponent';
 import SuccessComponent from '~/components/popupComponent/successComponent';
@@ -25,9 +25,8 @@ import LoadingComponent from '~/components/popupComponent/LoadingComponent';
 import ErrorComponent from '~/components/popupComponent/ErrorComponent';
 import services from '~/services/index.js';
 import { updatePayment } from '~/redux/PaymentSlice.js';
-import { PanGestureHandler } from 'react-native-gesture-handler';
 
-function Payment() {
+function Payment({componentId, run = false}) {
    //redux
    const dispatch = useDispatch();
    const dataPayment = useSelector((state) => state.payment);
@@ -222,33 +221,41 @@ function Payment() {
          </Animated.View>
       ));
    };
-   return (
-      <View style={styles.wrapper}>
-         <Text style={styles.header}>Payment Options</Text>
-         <View style={styles.content}>
-            <Text style={styles.label}>Credit/debit card</Text>
-            {RenderInputCard()}
-            {!resPost.success && <Text style={styles.error}>{`* ${resPost.msg}`}</Text>}
-            {validateInput && <Text style={styles.error}>{`* ${inputError}`}</Text>}
 
-            <Text style={styles.label}>More payment options</Text>
-            <ScrollView>{RenderListPaymentUI(dataPayment.data)}</ScrollView>
+   const RenderPaymentPage = (
+         <View style={styles.wrapper}>
+            <Text style={styles.header}>Payment Options</Text>
+            <View style={styles.content}>
+               <Text style={styles.label}>Credit/debit card</Text>
+               {RenderInputCard()}
+               {!resPost.success && <Text style={styles.error}>{`* ${resPost.msg}`}</Text>}
+               {validateInput && <Text style={styles.error}>{`* ${inputError}`}</Text>}
+   
+               <Text style={styles.label}>More payment options</Text>
+               <ScrollView>{RenderListPaymentUI(dataPayment.data)}</ScrollView>
+            </View>
+   
+            {/* Animation Troll Button */}
+            <PanGestureHandler onGestureEvent={handleMoveButton}>
+               <Animated.View style={[styles.buttonTap, animatedOffset]}>
+                  <ButtonComponent onlyIcon source={images.icons.tap} />
+               </Animated.View>
+            </PanGestureHandler>
+   
+            {/* Save Button */}
+            <ButtonComponent style={styles.buttonSaveCard} title={'Save card'} onPress={handleOnPress} />
+   
+            {/* Pop-Up */}
+            <SuccessComponent visible={visible} success={resPost.success} msg={resPost.msg} onPress={handleOnPressPopUp} />
          </View>
+      )
 
-         {/* Animation Troll Button */}
-         <PanGestureHandler onGestureEvent={handleMoveButton}>
-            <Animated.View style={[styles.buttonTap, animatedOffset]}>
-               <ButtonComponent onlyIcon source={images.icons.tap} />
-            </Animated.View>
-         </PanGestureHandler>
 
-         {/* Save Button */}
-         <ButtonComponent style={styles.buttonSaveCard} title={'Save card'} onPress={handleOnPress} />
-
-         {/* Pop-Up */}
-         <SuccessComponent visible={visible} success={resPost.success} msg={resPost.msg} onPress={handleOnPressPopUp} />
-      </View>
-   );
+   return <StackAnimated 
+      child = {RenderPaymentPage}
+      componentId = {componentId}
+      run = {run}
+   />;
 }
 
 export default Payment;

@@ -2,19 +2,20 @@ import { Navigation } from 'react-native-navigation';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { Provider } from 'react-redux';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import store from '~/redux/store.js';
 import { Button, StyleSheet, Text, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withDelay, withSpring, withTiming } from 'react-native-reanimated';
 import { types } from '@babel/core';
 import { useEffect, useState } from 'react';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 
+import {setRootLogin} from '~/routes'
+import store from '~/redux/store.js';
 import Login from '~/pages/login';
 import Home from '~/pages/home';
 import Payment from '~/pages/payment';
 import ItemDetail from '~/components/ItemDetail';
 import ItemDetailModal from '~/components/ItemDetailModal';
-import images from '~/assets';
+
 
 const queryClient = new QueryClient();
 
@@ -42,68 +43,26 @@ registerComponent('ItemDetail', ItemDetail);
 registerComponent('ItemDetailModal', ItemDetailModal);
 registerComponent('Login', Login)
 
-const setRootApp = {
-   root: {
-      bottomTabs: {
-         children: [
-            {
-               stack: {
-                  id: 'HOME_TAB',
-                  children: [
-                     {
-                        component: {
-                           id: 'HOME_SCREEN',
-                           name: 'HomePage',
-                        },
-                     },
-                  ],
-                  options: {
-                     bottomTab: {
-                        icon: images.icons.homeIconUnActive,
-                        selectedIcon: images.icons.homeIconActive,
-                     },
-                  },
-               },
-            },
-            {
-               stack: {
-                  id: 'PAYMENT_TAB',
-                  children: [
-                     {
-                        component: {
-                           id: 'PAYMENT_SCREEN',
-                           name: 'PaymentPage',
-                        },
-                     },
-                  ],
-                  options: {
-                     bottomTab: {
-                        icon: images.icons.cardIconUnActive,
-                        selectedIcon: images.icons.cardIconActive,
-                     },
-                  },
-               },
-            },
-         ],
-         options: {
-            topBar: {
-               visible: false,
-            },
-         },
-      },
-   },
-};
-
-const setRootLogin = {
-  root:{
-    component:{
-      name:'Login'
-    }
-  }
-}
 
 Navigation.events().registerAppLaunchedListener(async () => Navigation.setRoot(setRootLogin)
 );
+
+//animation
+Navigation.events().registerBottomTabPressedListener(async (value)=>{
+   if (value.tabIndex == 0) 
+   {
+      console.log(`index 0:${value.tabIndex}.`);
+      Navigation.updateProps('HOME_SCREEN',{run: true});
+      Navigation.updateProps('PAYMENT_SCREEN',{run: false});
+      return;
+   }
+   if (value.tabIndex == 1)
+   {
+      console.log(`index1:${value.tabIndex}.`);
+      Navigation.updateProps('HOME_SCREEN',{run: false});
+      Navigation.updateProps('PAYMENT_SCREEN',{run: true});
+   }
+});
 
 
 
@@ -309,40 +268,35 @@ Navigation.events().registerAppLaunchedListener(async () => Navigation.setRoot(s
 // //  };
 
 // const Animation = ({run,componentId ,child})=>{
-//   opacity = useSharedValue(0);
-//   scale = useSharedValue(3);
-//   const [runAnimation,setRunAnimation] = useState(run);
-//   console.log('Run in Animation:',run);
-
-//   useEffect(()=>{
-//     // setRunAnimation(run);
-//     console.log({run, componentId});
-//     if(run){
-//       opacity.value = withTiming(1,{duration:1000});
-//       scale.value = withTiming(1,{duration:1000});
-//       return
-//     }
-//     opacity.value = withTiming(0,{duration:1000});
-//     scale.value = withTiming(3,{duration:1000});
-
-//   },[run])
-
-//   const animatedStyle = useAnimatedStyle(()=>{
-//     return {
-//       opacity: opacity.value,
-//       transform:[
-//         {
-//           scale: scale.value,
-//         }
-//       ]
-//     }
-//   })
-
-//    return  <Animated.View componentId={componentId} style={[styles.root,  animatedStyle ]} >
-//     {child}
-//     </Animated.View>
-  
-// }
+//    opacity = useSharedValue(0);
+//    scale = useSharedValue(3);
+//    const [runAnimation,setRunAnimation] = useState(run);
+//    console.log('Run in Animation:',run);
+ 
+//    useEffect(()=>{
+//      // setRunAnimation(run);
+//      console.log({run, componentId});
+//      if(run){
+//        opacity.value = withTiming(1,{duration:1000});
+//        scale.value = withTiming(1,{duration:1000});
+//        return
+//      }
+//      opacity.value = withTiming(0,{duration:1000});
+//      scale.value = withTiming(3,{duration:1000});
+ 
+//    },[run])
+ 
+//    const animatedStyle = useAnimatedStyle(()=>{
+//      return {
+//        opacity: opacity.value,
+//        transform:[{scale: scale.value}]
+//      }
+//    })
+ 
+//     return  <Animated.View componentId={componentId} style={[styles.root,  animatedStyle ]} >
+//      {child}
+//      </Animated.View>
+//  }
  
 //  const styles = StyleSheet.create({
 //    root: {

@@ -1,7 +1,8 @@
+
 import { useEffect } from "react";
 import { useState } from "react";
 import { useRef } from "react";
-import { Text, TextInput, View } from "react-native";
+import { Keyboard, Text, TextInput, View } from "react-native";
 import Animated, { useAnimatedStyle, useSharedValue, withDelay, withRepeat, withSequence, withSpring, withTiming } from "react-native-reanimated";
 import styles from './styles.js'
 
@@ -10,12 +11,14 @@ function TextInputComponent({
     placeholder = 'placeholder' ,
     onChangeText, 
     msgError = '',
+    isFocus = false,
 }) {
     const [text,setText] = useState('init');
     const [msgE,setMsgE] = useState('');
     const [show,setShow] = useState(false);
 
     const refTextInput = useRef();
+    const refError = useRef();
 
     const scaleLabel = useSharedValue(1);
     const topLabel = useSharedValue(30);
@@ -24,14 +27,11 @@ function TextInputComponent({
     const translateXError = useSharedValue(0);
 
     useEffect(()=>{
-        console.log('animated')
-
         translateXError.value = withRepeat(
             withSequence( 
                 withTiming(2,{duration:200}),withTiming(-2,{duration:200}),withSpring(0)
             ),2,true
         ) 
-        
         return setMsgE(msgError);
     },[msgError])
     
@@ -94,13 +94,13 @@ function TextInputComponent({
         if (msg) passMsg = msg;
 
         if (show && passMsg != '')
-            return <Text style={styles.error}>{passMsg}</Text>
+            return <Text ref={refError} style={styles.error}>{passMsg}</Text>
     }
 
     return ( 
     <View style={{position:'relative'}}>
         <Animated.Text style={[styles.label, animationLabelStyle]}>{placeholder}</Animated.Text> 
-        <TextInput style={styles.input} 
+        <TextInput style={[styles.input,{borderColor: msgE != '' && show ? "#aa3311":"#41817C"}]} 
             placeholder=''
             placeholderTextColor='transparent'
             onChangeText={onChangeText}
@@ -110,6 +110,7 @@ function TextInputComponent({
             onBlur={handleOnBlur}
             inputMode={inputMode}
             ref={refTextInput}
+            autoFocus = {isFocus}
         />
         <Animated.View style={ animationErrorStyle}>
             <RenderError msg={msgE}/>

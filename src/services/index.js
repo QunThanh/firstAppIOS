@@ -20,7 +20,8 @@ const services = {
    getAllPayment: () => getAllPayment(baseURL),
    getMyArts: () => getMyArts(baseURL),
    postPayment: (data) => postPayment(baseURL, data),
-   getAllArtWithAxios : () => http.get('/getallitem').then((res)=>res.data),
+   getAllArtWithAxios : () => http.get('/getallitem').catch(err=>console.log('error request:',err.message)).then((res)=>res.data),
+   userService: (data) => http.post('/user', data).catch(err=>console.log('error request:', err?.message)).then(res=>res.data),
 };
 
 export default services;
