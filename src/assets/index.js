@@ -23,6 +23,7 @@ const images = {
    },
    icons: {
       tap: require('./img/tap.png'),
+      otp: require('./img/otp.png'),
       login: require('./img/login.png'),
       loginText: require('./img/loginText.png'),
       loginError: require('./img/loginError.png'),
@@ -40,6 +41,7 @@ const images = {
       cardIconActive: require('./img/icon_card_black.png'),
       cardIconUnActive: require('./img/icon_card_white.png'),
       delete: require('./img/trash.png'),
+      down: require('./img/down.png'),
    },
 };
 

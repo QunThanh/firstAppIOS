@@ -61,4 +61,24 @@ const setRootLogin = {
       }
     }
   }
-export {setRootApp,setRootLogin}
+
+  const setRootOtp = {
+   root:{
+      stack:{
+         children:[
+            {
+               component : {
+                  id: 'INPUT_NUM_SCREEN',
+                  name:'InputNumber',
+               }
+            },
+         ],
+         options:{
+            topBar:{
+               visible: false,
+            }
+         }
+      }
+    }
+  }
+export {setRootApp,setRootLogin,setRootOtp}

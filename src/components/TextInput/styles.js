@@ -20,7 +20,6 @@ const styles = StyleSheet.create({
       fontSize: 25,
       fontWeight:'600',
       color:'#aaa',
-      backgroundColor:'#344053',
    },
    error:{
       fontSize: 15,

@@ -11,8 +11,13 @@ function TextInputComponent({
     placeholder = 'placeholder' ,
     onChangeText, 
     msgError = '',
-    isFocus = false,
+    passStyle,
+    lineColor = "#41817C",
+    placeholderTextColor ='#344053',
+    keyboardType = 'text',
+    ...passProps
 }) {
+
     const [text,setText] = useState('init');
     const [msgE,setMsgE] = useState('');
     const [show,setShow] = useState(false);
@@ -98,19 +103,26 @@ function TextInputComponent({
     }
 
     return ( 
-    <View style={{position:'relative'}}>
-        <Animated.Text style={[styles.label, animationLabelStyle]}>{placeholder}</Animated.Text> 
-        <TextInput style={[styles.input,{borderColor: msgE != '' && show ? "#aa3311":"#41817C"}]} 
+    <View style={[styles.wrapper, passStyle]}>
+        <Animated.Text style={[
+            styles.label,
+            {backgroundColor: placeholderTextColor} ,
+            animationLabelStyle
+            ]}>
+                {placeholder}
+        </Animated.Text> 
+        <TextInput style={[styles.input,{borderColor: msgE != '' && show ? "#aa3311": lineColor}]} 
             placeholder=''
+            keyboardType={keyboardType}
             placeholderTextColor='transparent'
             onChangeText={onChangeText}
             selectionColor='dark gold'
             onChange={handleOnChange}
             onFocus={handleOnFocus}
             onBlur={handleOnBlur}
-            inputMode={inputMode}
             ref={refTextInput}
-            autoFocus = {isFocus}
+            inputMode={inputMode}
+            {...passProps}
         />
         <Animated.View style={ animationErrorStyle}>
             <RenderError msg={msgE}/>
