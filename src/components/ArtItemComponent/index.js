@@ -1,10 +1,11 @@
 import { View, Text, FlatList, Image, TouchableOpacity } from 'react-native';
 import { SharedElement } from 'react-navigation-shared-element';
 import Animated, { SlideInLeft } from 'react-native-reanimated';
+import { Navigation } from 'react-native-navigation';
 
 import styles from './styles.js';
 import images from '~/assets/index.js';
-import { Navigation } from 'react-native-navigation';
+import strings from '~/languages';
 
 function ArtItemComponent({ data, componentId, style }) {
    //check type
@@ -65,7 +66,9 @@ function ArtItemComponent({ data, componentId, style }) {
                         <Image style={styles.boxArt.imgArt} source={images.artDefault} />
                      )}
                      <View style={item.artistActive ? { backgroundColor: 'transparent' } : styles.boxArt.textNotion}>
-                        {item.artistActive ? null : <Text style={styles.boxArt.textNotion.text}>NEW ARTIST</Text>}
+                        {item.artistActive ? null : (
+                           <Text style={styles.boxArt.textNotion.text}>{strings.global.newArtist}</Text>
+                        )}
                      </View>
                   </View>
 
